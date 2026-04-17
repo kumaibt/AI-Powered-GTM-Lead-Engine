@@ -5,31 +5,35 @@ from scoring import score_lead
 
 
 def run_pipeline():
-	results = []
+    results = []
 
-	for company in companies:
-		enriched = enrich_company(company)
+    for company in companies:
+        enriched = enrich_company(company)
 
-		score = score_lead(enriched)
-		enriched["score"] = score
+        score = score_lead(enriched)
+        enriched["score"] = score
 
-		email = generate_email(enriched)
+        email = generate_email(enriched)
 
-		results.append({
-			"company": company["name"],
-			"score": score,
-			"email": email
-		})
+        results.append({
+            "company": company["name"],
+            "score": score,
+            "industry": enriched.get("industry", ""),
+            "email": email
+        })
 
-		print("\n====================")
-		print("Company:", company["name"])
-		print("Score:", score)
-		print("\nEMAIL:\n", email)
-
-	avg_score = sum(r["score"] for r in results) / len(results)
-	print("\n====================")
-	print(f"Processed {len(results)} leads")
-	print(f"Average score: {avg_score:.1f}")
+    return results
 
 if __name__ == "__main__":
-	run_pipeline()
+    results = run_pipeline()
+
+    for r in results:
+        print("\n====================")
+        print("Company:", r["company"])
+        print("Score:", r["score"])
+        print("\nEMAIL:\n", r["email"])
+
+    avg_score = sum(r["score"] for r in results) / len(results)
+    print("\n====================")
+    print(f"Processed {len(results)} leads")
+    print(f"Average score: {avg_score:.1f}")
